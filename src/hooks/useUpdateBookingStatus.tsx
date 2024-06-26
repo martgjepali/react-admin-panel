@@ -5,11 +5,12 @@ const useUpdateBookingStatus = () => {
     const [isLoading, setLoading] = useState(false);
     const notify = useNotify();
     const refresh = useRefresh();
+    const URL = "http://localhost:8000"
 
     const updateStatus = async (bookingID: number, status: string) => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:8000/bookings/${bookingID}/status?status=${status}`, {
+            const response = await fetch(`${URL}/bookings/${bookingID}/status?status=${status}`, {
                 method: 'PUT',
             });
 

@@ -26,7 +26,7 @@ const handleGetListResponse = async <T>(
       (item as any).UserID ||
       (item as any).PackageID ||
       (item as any).DestinationID ||
-      (item as any).BookingID, // Ensure `id` is correctly set
+      (item as any).BookingID, 
   }));
 
   console.log(`Fetched data for resource ${resource}:`, data);
@@ -48,7 +48,7 @@ const handleSingleResponse = async <T>(
       response.json.UserID ||
       response.json.PackageID ||
       response.json.DestinationID ||
-      response.json.BookingID, // Ensure `id` is correctly set
+      response.json.BookingID, 
   };
 
   console.log(`Fetched data for resource ${resource}:`, data);
