@@ -1,4 +1,9 @@
-import { DataProvider, fetchUtils } from "react-admin";
+import {
+  CreateParams,
+  DataProvider,
+  fetchUtils,
+  UpdateParams,
+} from "react-admin";
 import {
   User,
   Package,
@@ -9,25 +14,32 @@ import {
 
 const API_URL = "http://localhost:8000";
 
-const handleGetListResponse = async <T>(
+const handleGetListResponse = async (
   response: FetchJsonResponse,
   resource: string
 ) => {
   if (!response.headers.has("X-Total-Count")) {
-    throw new Error(
-      "The X-Total-Count header is missing in the HTTP Response."
-    );
+    throw new Error("The X-Total-Count header is missing in the HTTP Response.");
   }
 
-  const data = response.json.map((item: T & { id: number }) => ({
-    ...item,
-    id:
-      item.id ||
-      (item as any).UserID ||
-      (item as any).PackageID ||
-      (item as any).DestinationID ||
-      (item as any).BookingID, 
-  }));
+  const data = response.json.map((item: any) => {
+    // Default to existing id if defined, else based on resource type
+    let id = item.id ?? (
+      resource === 'users' ? item.UserID :
+      resource === 'packages' ? item.PackageID :
+      resource === 'destinations' ? item.DestinationID :
+      resource === 'bookings' ? item.BookingID :
+      undefined
+    );
+
+    // If id is still undefined, throw an error or handle accordingly
+    if (id === undefined) {
+      console.error("ID not found for item: ", item);
+      throw new Error("ID not found for item, check resource type and item properties.");
+    }
+
+    return { ...item, id };
+  });
 
   console.log(`Fetched data for resource ${resource}:`, data);
 
@@ -48,7 +60,7 @@ const handleSingleResponse = async <T>(
       response.json.UserID ||
       response.json.PackageID ||
       response.json.DestinationID ||
-      response.json.BookingID, 
+      response.json.BookingID,
   };
 
   console.log(`Fetched data for resource ${resource}:`, data);
@@ -58,6 +70,65 @@ const handleSingleResponse = async <T>(
   };
 };
 
+const createDestinationFormData = (
+  params: CreateParams<Destination> | UpdateParams<Destination>
+) => {
+  const formData = new FormData();
+
+  if (params.data.DestinationID) {
+    formData.append("DestinationID", params.data.DestinationID.toString());
+  }
+  if (params.data.DestinationName) {
+    formData.append("DestinationName", params.data.DestinationName);
+  }
+  if (params.data.Country) {
+    formData.append("Country", params.data.Country);
+  }
+  if (params.data.Description) {
+    formData.append("Description", params.data.Description);
+  }
+
+  if (params.data.image) {
+    if (params.data.image.rawFile) {
+      formData.append("image", params.data.image.rawFile);
+    }
+    if (params.data.image.title) {
+      formData.append("image_title", params.data.image.title);
+    }
+  }
+
+  return formData;
+};
+
+const createPackageFormData = (
+  params: CreateParams<Package> | UpdateParams<Package>
+): FormData => {
+  const formData = new FormData();
+
+  if (params.data.PackageName) {
+    formData.append("PackageName", params.data.PackageName);
+  }
+  if (params.data.Description) {
+    formData.append("Description", params.data.Description);
+  }
+  if (params.data.Price) {
+    formData.append("Price", params.data.Price.toString());
+  }
+  if (params.data.Duration) {
+    formData.append("Duration", params.data.Duration.toString());
+  }
+  if (params.data.StartDate) {
+    formData.append("StartDate", params.data.StartDate.toString());
+  }
+  if (params.data.EndDate) {
+    formData.append("EndDate", params.data.EndDate.toString());
+  }
+  if (params.data.DestinationID) {
+    formData.append("DestinationID", params.data.DestinationID.toString());
+  }
+  return formData;
+};
+
 export const dataProvider: DataProvider = {
   getList: async (resource, params) => {
     const { page, perPage } = params.pagination || { page: 1, perPage: 10 };
@@ -65,11 +136,8 @@ export const dataProvider: DataProvider = {
     const url = `${API_URL}/${resource}?skip=${
       (page - 1) * perPage
     }&limit=${perPage}&_sort=${field}&_order=${order}`;
-    const response = await fetchUtils.fetchJson(url);
-    return handleGetListResponse<User | Package | Destination | Booking>(
-      response,
-      resource
-    );
+    const response: FetchJsonResponse = await fetchUtils.fetchJson(url);
+    return handleGetListResponse(response, resource);
   },
 
   getOne: async (resource, params) => {
@@ -81,15 +149,34 @@ export const dataProvider: DataProvider = {
     );
   },
 
-  create: async (resource, params) => {
+  create: async (resource: string, params: CreateParams) => {
+    let options: RequestInit = {};
+
+    if (resource === "destinations" || resource === "packages") {
+      const formData =
+        resource === "packages"
+          ? createPackageFormData(params)
+          : createDestinationFormData(params);
+      options = {
+        method: "POST",
+        body: formData,
+      };
+    } else {
+      options = {
+        method: "POST",
+        body: JSON.stringify(params.data),
+        headers: new Headers({ "Content-Type": "application/json" }),
+      };
+    }
+
     const url = `${API_URL}/${resource}`;
-    const options = {
-      method: "POST",
-      body: JSON.stringify(params.data),
-      headers: new Headers({ "Content-Type": "application/json" }),
-    };
-    const response = await fetchUtils.fetchJson(url, options);
-    return handleSingleResponse<Package | Destination>(response, resource);
+    try {
+      const response = await fetchUtils.fetchJson(url, options);
+      return handleSingleResponse<Package | Destination>(response, resource);
+    } catch (error) {
+      console.error("Create request failed:", error);
+      throw error;
+    }
   },
 
   update: async (resource, params) => {
@@ -119,12 +206,12 @@ export const dataProvider: DataProvider = {
     const url = `${API_URL}/${resource}`;
     const options = {
       method: "DELETE",
-      body: JSON.stringify(params.ids),
+      body: JSON.stringify({ ids: params.ids }),
       headers: new Headers({ "Content-Type": "application/json" }),
     };
     const response = await fetchUtils.fetchJson(url, options);
     return {
-      data: params.ids,
+      data: response.json as number[],
     };
   },
 };

@@ -3,8 +3,8 @@ import {
   Datagrid,
   TextField,
   EditButton,
-  FunctionField,
 } from "react-admin";
+import ImageSrcField from "../image_src_field/ImageSrcField";
 
 const DestinationList = (props: any) => {
   return (
@@ -15,6 +15,7 @@ const DestinationList = (props: any) => {
           <TextField source="DestinationName" label="Destination Name" />
           <TextField source="Country" label="Country" />
           <TextField source="Description" label="Description" />
+          <ImageSrcField source="image" label="Image Path" /> 
           <EditButton />
         </Datagrid>
       </List>
