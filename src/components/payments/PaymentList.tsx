@@ -1,27 +1,29 @@
+import React from 'react';
 import {
-    List,
-    Datagrid,
-    TextField,
-    DateField,
-    NumberField,
-    EditButton,
-  } from "react-admin";
+  List,
+  Datagrid,
+  TextField,
+  DateField,
+  NumberField,
+} from "react-admin";
 
 const PaymentList = (props: any) => {
     return (
         <div>
-          <List sort={{ field: "PackageID", order: "ASC" }} {...props}>
+          <List sort={{ field: "PaymentID", order: "ASC" }} {...props}>
             <Datagrid>
               <TextField source="PaymentID" label="Payment ID" />
               <TextField source="BookingID" label="Booking ID" />
-              <TextField source="PaymentDate" label="Payment Date" />
+              <DateField source="PaymentDate" label="Payment Date" showTime />
               <NumberField source="Amount" label="Amount" />
-              <NumberField source="PaymentMethod" label="Payment Method" />
-              <DateField source="Status" label="Status" />
+              <TextField source="PaymentMethod" label="Payment Method" />
+              <TextField source="Status" label="Status" />
+              <TextField source="SessionID" label="Session ID" />
+              <TextField source="PaymentIntentID" label="Payment Intent ID" />
             </Datagrid>
           </List>
         </div>
       );
 }
 
-export default PaymentList
+export default PaymentList;

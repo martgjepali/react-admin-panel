@@ -15,6 +15,7 @@ const EditPackage: React.FC<EditProps> = (props) => {
   return (
     <Edit {...props} resource="packages">
       <SimpleForm>
+      <TextInput disabled source="PackageID" />
         <TextInput source="PackageName" validate={[required()]} />
         <TextInput
           source="Description"
@@ -34,6 +35,7 @@ const EditPackage: React.FC<EditProps> = (props) => {
           defaultValue={new Date()}
         />
         <TextInput source="DestinationID" label="Destination ID" />
+        <TextInput disabled source="Country" label="Country" />
       </SimpleForm>
     </Edit>
   );

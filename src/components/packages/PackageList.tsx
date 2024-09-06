@@ -20,6 +20,7 @@ const PackageList = (props: any) => {
           <DateField source="StartDate" label="Start Date" />
           <DateField source="EndDate" label="End Date" />
           <TextField source="DestinationID" label="Destination ID" />
+          <TextField source="Country" label="Country" />
           <EditButton />
         </Datagrid>
       </List>

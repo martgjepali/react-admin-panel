@@ -5,6 +5,8 @@ import {
     required,
     minLength,
     EditProps,
+    ImageInput,
+    ImageField,
   } from "react-admin";
   
   const EditDestination: React.FC<EditProps> = (props) => (
@@ -13,7 +15,10 @@ import {
        <TextInput disabled source="DestinationID" />
         <TextInput source="DestinationName" validate={[required(), minLength(2)]} />
         <TextInput source="Country" validate={[required(), minLength(2)]} />
-        <TextInput source="Description" multiline={true} validate={[required(), minLength(10)]} />
+        <TextInput source="Description" multiline={true} />
+        <ImageInput source="image" label="Related pictures" accept={{ 'image/*': ['.png', '.jpg'] }}>
+          <ImageField source="src" title="title" />
+        </ImageInput>
       </SimpleForm>
     </Edit>
   );

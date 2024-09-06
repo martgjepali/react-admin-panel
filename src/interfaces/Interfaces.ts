@@ -13,17 +13,18 @@ export interface User {
   disabled: boolean;
   is_verified: boolean;
 }
-
 export interface BasePackage {
   PackageID: number;
   PackageName: string;
   Description: string;
   Price: number;
-  Duration: Date;
+  Duration: number; // Duration is a number
   StartDate: Date;
   EndDate: Date;
   DestinationID: number;
+  Country: string;
 }
+
 export type Package = BasePackage & {
   id: number;
 };
@@ -33,9 +34,9 @@ export interface BaseDestination {
   Country: string;
   Description: string;
   image: {
-    title?: string;
-    src?: string;
-    rawFile: File
+    title?: string | null;
+    src?: string | null;
+    rawFile: File | null;
   };
 }
 
@@ -54,7 +55,23 @@ export interface BaseBooking {
   UserFirstName: string;
   UserLastName: string;
 }
+
 export type Booking = BaseBooking & {
+  id: number;
+};
+
+export interface BasePayment {
+  PaymentID: number;
+  BookingID: number;
+  PaymentDate: Date;
+  Amount: number;
+  PaymentMethod: string;
+  Status: string;
+  SessionID: string;
+  PaymentIntentID: string;
+}
+
+export type Payment = BasePayment & {
   id: number;
 };
 export interface ButtonProps {

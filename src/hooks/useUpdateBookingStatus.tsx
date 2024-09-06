@@ -5,7 +5,7 @@ const useUpdateBookingStatus = () => {
     const [isLoading, setLoading] = useState(false);
     const notify = useNotify();
     const refresh = useRefresh();
-    const URL = "http://localhost:8000"
+    const URL = "https://server-app-zxcxm.ondigitalocean.app"
 
     const updateStatus = async (bookingID: number, status: string) => {
         setLoading(true);

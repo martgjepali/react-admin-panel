@@ -12,7 +12,7 @@ import {
   Booking,
 } from "../interfaces/Interfaces";
 
-const API_URL = "http://localhost:8000";
+const API_URL = "https://server-app-zxcxm.ondigitalocean.app";
 
 const handleGetListResponse = async (
   response: FetchJsonResponse,
@@ -29,6 +29,7 @@ const handleGetListResponse = async (
       resource === 'packages' ? item.PackageID :
       resource === 'destinations' ? item.DestinationID :
       resource === 'bookings' ? item.BookingID :
+      resource === 'payments' ? item.PaymentID :
       undefined
     );
 

@@ -14,7 +14,6 @@ const UserList = (props: any) => {
         <TextField source="GoogleID" label="Google ID" />
         <TextField source="FirstName" label="First Name" />
         <TextField source="LastName" label="Last Name" />
-        <TextField source="username" label="Username" />
         <TextField source="Email" label="Email" />
         <TextField source="Phone" label="Phone" />
         <DateField source="DateOfBirth" label="Date Of Birth" />
