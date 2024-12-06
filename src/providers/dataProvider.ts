@@ -12,31 +12,40 @@ import {
   Booking,
 } from "../interfaces/Interfaces";
 
-const API_URL = "https://server-app-zxcxm.ondigitalocean.app";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const handleGetListResponse = async (
   response: FetchJsonResponse,
   resource: string
 ) => {
   if (!response.headers.has("X-Total-Count")) {
-    throw new Error("The X-Total-Count header is missing in the HTTP Response.");
+    throw new Error(
+      "The X-Total-Count header is missing in the HTTP Response."
+    );
   }
 
   const data = response.json.map((item: any) => {
     // Default to existing id if defined, else based on resource type
-    let id = item.id ?? (
-      resource === 'users' ? item.UserID :
-      resource === 'packages' ? item.PackageID :
-      resource === 'destinations' ? item.DestinationID :
-      resource === 'bookings' ? item.BookingID :
-      resource === 'payments' ? item.PaymentID :
-      undefined
-    );
+    let id =
+      item.id ??
+      (resource === "users"
+        ? item.UserID
+        : resource === "packages"
+        ? item.PackageID
+        : resource === "destinations"
+        ? item.DestinationID
+        : resource === "bookings"
+        ? item.BookingID
+        : resource === "payments"
+        ? item.PaymentID
+        : undefined);
 
     // If id is still undefined, throw an error or handle accordingly
     if (id === undefined) {
       console.error("ID not found for item: ", item);
-      throw new Error("ID not found for item, check resource type and item properties.");
+      throw new Error(
+        "ID not found for item, check resource type and item properties."
+      );
     }
 
     return { ...item, id };

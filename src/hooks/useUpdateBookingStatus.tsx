@@ -5,12 +5,12 @@ const useUpdateBookingStatus = () => {
     const [isLoading, setLoading] = useState(false);
     const notify = useNotify();
     const refresh = useRefresh();
-    const URL = "https://server-app-zxcxm.ondigitalocean.app"
+    const API_URL = import.meta.env.VITE_API_URL;
 
     const updateStatus = async (bookingID: number, status: string) => {
         setLoading(true);
         try {
-            const response = await fetch(`${URL}/bookings/${bookingID}/status?status=${status}`, {
+            const response = await fetch(`${API_URL}/bookings/${bookingID}/status?status=${status}`, {
                 method: 'PUT',
             });
 
